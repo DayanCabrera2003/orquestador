@@ -1,0 +1,27 @@
+# Dependencias y builds
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Entorno
+.env
+.env.*
+!.env.example
+
+# Datos locales de la app
+.orquestador/
+
+# Editor y sistema
+.vscode/
+.idea/
+.DS_Store
+*.log
+
+# Archivos de asistentes: nunca van al repositorio
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+.mcp.json
+docs/superpowers/
