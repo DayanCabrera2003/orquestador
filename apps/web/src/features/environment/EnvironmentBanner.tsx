@@ -7,8 +7,14 @@ export function EnvironmentBanner() {
   const env = useApp((s) => s.environment);
   if (!env) return null;
   const messages: string[] = [];
-  if (!env.git.found) messages.push(t('environment.gitMissing'));
-  if (env.agentCli.problem === 'not-found') messages.push(t('environment.agentMissing'));
+  const gitHelp = {
+    linux: 'environment.gitHelpLinux',
+    darwin: 'environment.gitHelpDarwin',
+    win32: 'environment.gitHelpWin32',
+  } as const;
+  if (!env.git.found) messages.push(`${t('environment.gitMissing')} ${t(gitHelp[env.platform])}`);
+  if (env.agentCli.problem === 'not-found')
+    messages.push(`${t('environment.agentMissing')} ${t('environment.agentHelp')}`);
   if (env.agentCli.problem === 'failed') messages.push(t('environment.agentFailed'));
   if (messages.length === 0) return null;
   return (
