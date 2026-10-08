@@ -63,7 +63,15 @@ export interface AgentHandle {
   close: () => void;
 }
 
+export interface TerminalLaunch {
+  model: ModelTier;
+  instructions: string;
+  resumeId: string | undefined;
+}
+
 /** Ejecuta sesiones del agente. */
 export interface AgentRuntime {
   start: (options: AgentStartOptions, callbacks: AgentCallbacks) => AgentHandle;
+  /** Comando de la CLI interactiva para abrir la misma conversación en una terminal. */
+  terminalCommand: (launch: TerminalLaunch) => { command: string; args: string[] };
 }

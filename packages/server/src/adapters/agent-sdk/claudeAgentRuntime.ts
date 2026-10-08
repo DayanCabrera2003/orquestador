@@ -15,6 +15,7 @@ import type {
   AgentRuntime,
   AgentStartOptions,
   CoordinationHandlers,
+  TerminalLaunch,
 } from '../../ports/AgentRuntime';
 import { InputQueue } from './inputQueue';
 
@@ -125,7 +126,18 @@ function userMessage(content: string): SDKUserMessage {
 
 /** Sesiones reales del agente sobre el SDK, en modo de entrada continua (multi-turno). */
 export class ClaudeAgentRuntime implements AgentRuntime {
-  constructor(private readonly log: (message: string) => void = () => undefined) {}
+  constructor(
+    private readonly cliCommand: string,
+    private readonly log: (message: string) => void = () => undefined,
+  ) {}
+
+  terminalCommand({ model, instructions, resumeId }: TerminalLaunch): {
+    command: string;
+    args: string[];
+  } {
+    const args = ['--model', MODEL_IDS[model], '--append-system-prompt', instructions];
+    return { command: this.cliCommand, args: resumeId ? [...args, '--resume', resumeId] : args };
+  }
 
   start(options: AgentStartOptions, callbacks: AgentCallbacks): AgentHandle {
     const input = new InputQueue<SDKUserMessage>();
