@@ -90,7 +90,9 @@ describe('composeInstructions', () => {
 
   it('explica a un padre cómo responder, escalar y revisar', () => {
     const text = compose('consultor');
-    expect(text).toContain('Te reportan: «Ejecutor 1», «Ejecutor 2».');
+    expect(text).toContain(
+      'Te reportan: «Ejecutor 1», «Ejecutor 2». Para asignarles trabajo usa `delegate_task`',
+    );
     expect(text).toContain('`answer_question`');
     expect(text).toContain('`escalate_question` y la duda subirá a «Líder técnico»');
     expect(text).toContain('Revisa cada resumen');

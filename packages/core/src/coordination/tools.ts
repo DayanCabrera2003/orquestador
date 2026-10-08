@@ -7,6 +7,8 @@ export const COORDINATION_TOOLS = {
   askParent: 'ask_parent',
   /** Pregunta directamente al usuario. Para decisiones de diseño. */
   askUser: 'ask_user',
+  /** Asigna una tarea a una sesión que le reporta. La inicia si no está en marcha. */
+  delegateTask: 'delegate_task',
   /** Responde una pregunta recibida de una sesión hija. */
   answerQuestion: 'answer_question',
   /** Sube una pregunta recibida al siguiente eslabón de la cadena. */

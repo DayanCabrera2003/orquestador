@@ -77,7 +77,8 @@ export function composeInstructions(
     if (children.length > 0) {
       const next = parent ? quote(parent) : 'al usuario';
       rules.push(
-        `Te reportan: ${list(children, quote)}. Cuando te pregunten, responde con \`${T.answerQuestion}\` solo si estás segura; ` +
+        `Te reportan: ${list(children, quote)}. Para asignarles trabajo usa \`${T.delegateTask}\` con una tarea concreta y acotada para cada una.`,
+        `Cuando te pregunten, responde con \`${T.answerQuestion}\` solo si estás segura; ` +
           `si no, usa \`${T.escalateQuestion}\` y la duda subirá ${parent ? `a ${next}` : next}.`,
         'Revisa cada resumen que recibas. Si algo está mal o incompleto, devuélvelo con correcciones concretas antes de darlo por bueno.',
       );
