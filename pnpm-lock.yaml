@@ -25,6 +25,8 @@ importers:
 
   packages/protocol: {}
 
+  packages/server: {}
+
 packages:
 
   '@jridgewell/resolve-uri@3.1.2':
