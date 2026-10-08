@@ -9,7 +9,7 @@ let dir: string;
 const ws = new GitWorkspace();
 
 beforeAll(async () => {
-  dir = realpathSync(mkdtempSync(join(tmpdir(), 'orq-git-')));
+  dir = realpathSync.native(mkdtempSync(join(tmpdir(), 'orq-git-')));
   mkdirSync(join(dir, 'repo', 'sub'), { recursive: true });
   mkdirSync(join(dir, 'plain'));
   writeFileSync(join(dir, 'file.txt'), 'x');
