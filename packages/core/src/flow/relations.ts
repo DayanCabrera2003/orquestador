@@ -27,3 +27,27 @@ export function setReportsTo(
   }
   return ok(updateSession(flow, childId, (s) => ({ ...s, reportsTo: parentId })));
 }
+
+/** Permite que `parentId` invoque a `childId` como subagente. */
+export function addSubagent(
+  flow: Flow,
+  parentId: string,
+  childId: string,
+): Result<Flow, RelationError> {
+  const parent = findSession(flow, parentId);
+  if (!parent) return err({ code: 'unknown-session', id: parentId });
+  if (!findSession(flow, childId)) return err({ code: 'unknown-session', id: childId });
+  if (parentId === childId) return err({ code: 'self-relation' });
+  if (parent.subagents.includes(childId)) return err({ code: 'duplicate-subagent' });
+  return ok(updateSession(flow, parentId, (s) => ({ ...s, subagents: [...s.subagents, childId] })));
+}
+
+/** Quita la relación de subagente. Si no existía, devuelve el flujo igual. */
+export function removeSubagent(flow: Flow, parentId: string, childId: string): Flow {
+  const parent = findSession(flow, parentId);
+  if (!parent?.subagents.includes(childId)) return flow;
+  return updateSession(flow, parentId, (s) => ({
+    ...s,
+    subagents: s.subagents.filter((id) => id !== childId),
+  }));
+}

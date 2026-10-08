@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { makeFlow, makeSession } from './fixtures';
 import { findSession } from './graph';
-import { setReportsTo } from './relations';
+import { addSubagent, removeSubagent, setReportsTo } from './relations';
 
 const flow = makeFlow([
   makeSession({ id: 'lider' }),
@@ -39,5 +39,38 @@ describe('setReportsTo', () => {
       ok: false,
       error: { code: 'unknown-session', id: 'nadie' },
     });
+  });
+});
+
+describe('subagentes', () => {
+  it('addSubagent agrega al final de la lista', () => {
+    const r = addSubagent(flow, 'lider', 'consultor');
+    expect(r.ok && findSession(r.value, 'lider')?.subagents).toEqual(['consultor']);
+  });
+
+  it('addSubagent rechaza duplicados, a sí misma y desconocidas', () => {
+    const r = addSubagent(flow, 'lider', 'consultor');
+    if (!r.ok) throw new Error('debería agregar');
+    expect(addSubagent(r.value, 'lider', 'consultor')).toEqual({
+      ok: false,
+      error: { code: 'duplicate-subagent' },
+    });
+    expect(addSubagent(flow, 'lider', 'lider')).toEqual({
+      ok: false,
+      error: { code: 'self-relation' },
+    });
+    expect(addSubagent(flow, 'lider', 'nadie')).toEqual({
+      ok: false,
+      error: { code: 'unknown-session', id: 'nadie' },
+    });
+  });
+
+  it('removeSubagent quita la relación y no falla si no existía', () => {
+    const r = addSubagent(flow, 'lider', 'consultor');
+    if (!r.ok) throw new Error('debería agregar');
+    expect(findSession(removeSubagent(r.value, 'lider', 'consultor'), 'lider')?.subagents).toEqual(
+      [],
+    );
+    expect(removeSubagent(flow, 'lider', 'e1')).toEqual(flow);
   });
 });
