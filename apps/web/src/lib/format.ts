@@ -4,8 +4,9 @@ export function formatTokens(n: number): string {
   return String(Math.round(n));
 }
 
+/** Dólares con dos decimales; con tres si es menos de un dólar y no es cero, para que se note el gasto de modelos baratos. */
 export function formatUsd(n: number): string {
-  return `$${n.toFixed(2)}`;
+  return `$${n > 0 && n < 1 ? n.toFixed(3) : n.toFixed(2)}`;
 }
 
 export function percent(part: number, total: number): number {

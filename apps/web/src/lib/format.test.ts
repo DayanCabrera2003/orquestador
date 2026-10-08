@@ -10,6 +10,8 @@ describe('formato', () => {
 
   it('formatea dólares y porcentajes', () => {
     expect(formatUsd(3.456)).toBe('$3.46');
+    expect(formatUsd(0.0048)).toBe('$0.005');
+    expect(formatUsd(0)).toBe('$0.00');
     expect(percent(50, 200)).toBe(25);
     expect(percent(300, 200)).toBe(100);
     expect(percent(1, 0)).toBe(0);
