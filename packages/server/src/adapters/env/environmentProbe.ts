@@ -1,17 +1,19 @@
 import type { Environment } from '@orquestador/protocol';
-import { execa, ExecaError } from 'execa';
+import { execa } from 'execa';
 import type { EnvironmentProbe } from '../../ports/EnvironmentProbe';
+import { findExecutable } from './findExecutable';
 
 type ToolStatus = Environment['git'];
 
 async function versionOf(command: string): Promise<ToolStatus> {
+  const path = await findExecutable(command);
+  if (!path) return { found: false, version: null, problem: 'not-found' };
   try {
     const r = await execa(command, ['--version'], { timeout: 10_000 });
     const match = /\d+\.\d+(\.\d+)?/.exec(r.stdout);
     return { found: true, version: match?.[0] ?? null, problem: null };
-  } catch (e) {
-    const notFound = e instanceof ExecaError && e.code === 'ENOENT';
-    return { found: !notFound, version: null, problem: notFound ? 'not-found' : 'failed' };
+  } catch {
+    return { found: true, version: null, problem: 'failed' };
   }
 }
 
