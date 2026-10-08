@@ -23,6 +23,8 @@ importers:
 
   packages/core: {}
 
+  packages/protocol: {}
+
 packages:
 
   '@jridgewell/resolve-uri@3.1.2':
