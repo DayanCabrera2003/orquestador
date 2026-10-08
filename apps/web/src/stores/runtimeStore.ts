@@ -6,6 +6,7 @@ import { reportError } from './errors';
 import { useFlow } from './flowStore';
 
 const HISTORY_POINTS = 60;
+const TERMINAL_BUFFER_CHARS = 200_000;
 const PULSE_MS = 1600;
 
 export interface Pulse {
@@ -23,6 +24,8 @@ interface RuntimeState {
   drafts: Record<string, string>;
   inbox: InboxItem[];
   pulses: Pulse[];
+  /** Salida reciente de la terminal de cada sesión, para mostrarla al volver a la pestaña. */
+  terminalBuffers: Record<string, string>;
   loadFlow: (flowId: string) => Promise<void>;
   loadMessages: (flowId: string, sessionId: string) => Promise<void>;
   handle: (event: ServerEvent) => void;
@@ -38,6 +41,7 @@ export const useRuntime = create<RuntimeState>((set, get) => ({
   drafts: {},
   inbox: [],
   pulses: [],
+  terminalBuffers: {},
 
   loadFlow: async (flowId) => {
     try {
@@ -130,13 +134,30 @@ export const useRuntime = create<RuntimeState>((set, get) => ({
         reportError(new Error(event.message));
         return;
       }
-      case 'terminal.data':
+      case 'terminal.data': {
+        const buffer = (state.terminalBuffers[event.sessionId] ?? '') + event.data;
+        set({
+          terminalBuffers: {
+            ...state.terminalBuffers,
+            [event.sessionId]: buffer.slice(-TERMINAL_BUFFER_CHARS),
+          },
+        });
+        return;
+      }
       case 'terminal.exit':
         return;
     }
   },
 
   reset: () => {
-    set({ runtimes: {}, costHistory: {}, messages: {}, drafts: {}, inbox: [], pulses: [] });
+    set({
+      runtimes: {},
+      costHistory: {},
+      messages: {},
+      drafts: {},
+      inbox: [],
+      pulses: [],
+      terminalBuffers: {},
+    });
   },
 }));
