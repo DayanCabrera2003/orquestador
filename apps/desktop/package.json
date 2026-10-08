@@ -4,7 +4,10 @@
   "version": "0.0.0",
   "private": true,
   "description": "Orquestador de sesiones de agentes de código",
-  "author": "Dayan Cabrera",
+  "author": {
+    "name": "Dayan Cabrera",
+    "email": "DayanCabrera2003@users.noreply.github.com"
+  },
   "license": "MIT",
   "type": "module",
   "main": "out/main.mjs",
@@ -34,5 +37,6 @@
     "@anthropic-ai/claude-agent-sdk-linux-x64": "~0.3.295",
     "@anthropic-ai/claude-agent-sdk-win32-arm64": "~0.3.295",
     "@anthropic-ai/claude-agent-sdk-win32-x64": "~0.3.295"
-  }
+  },
+  "homepage": "https://github.com/DayanCabrera2003/orquestador"
 }
