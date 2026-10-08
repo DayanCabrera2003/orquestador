@@ -46,7 +46,17 @@ describe('TerminalManager', () => {
     const events: ServerEvent[] = [];
     ctx.events.subscribe((e) => events.push(e));
 
-    await terminals.openTerminal(base.id, 'e1', 100, 30);
+    let launches = 0;
+    const originalOpen = terminal.open;
+    terminal.open = (o, c) => {
+      launches++;
+      return originalOpen(o, c);
+    };
+    await Promise.all([
+      terminals.openTerminal(base.id, 'e1', 100, 30),
+      terminals.openTerminal(base.id, 'e1', 100, 30),
+    ]);
+    expect(launches).toBe(1);
     expect(opened).toMatchObject({
       command: 'agente',
       args: ['--model', 'haiku'],

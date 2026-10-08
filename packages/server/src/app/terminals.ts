@@ -8,6 +8,8 @@ const key = (flowId: string, sessionId: string): string => `${flowId}\u0000${ses
 /** Terminales interactivas de la CLI del agente, una por sesión. */
 export class TerminalManager {
   private readonly open = new Map<string, TerminalHandle>();
+  /** Aperturas en curso: evita lanzar dos procesos si llegan dos pedidos seguidos. */
+  private readonly opening = new Set<string>();
 
   constructor(
     private readonly ctx: AppContext,
@@ -23,9 +25,11 @@ export class TerminalManager {
       current.resize(cols, rows);
       return;
     }
-    const { cwd, launch } = await this.sessions.beginTerminal(flowId, sessionId);
-    const { command, args } = this.agents.terminalCommand(launch);
+    if (this.opening.has(k)) return;
+    this.opening.add(k);
     try {
+      const { cwd, launch } = await this.sessions.beginTerminal(flowId, sessionId);
+      const { command, args } = this.agents.terminalCommand(launch);
       const handle = this.terminal.open(
         { command, args, cwd, cols, rows },
         {
@@ -43,6 +47,8 @@ export class TerminalManager {
     } catch (e) {
       this.sessions.endTerminal(flowId, sessionId);
       throw e;
+    } finally {
+      this.opening.delete(k);
     }
   }
 
