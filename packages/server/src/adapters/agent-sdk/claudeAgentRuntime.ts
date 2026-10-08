@@ -8,6 +8,7 @@ import {
   type SDKUserMessage,
 } from '@anthropic-ai/claude-agent-sdk';
 import { COORDINATION_TOOLS, type ModelTier, type Permissions } from '@orquestador/core';
+import { isAbsolute } from 'node:path';
 import { z } from 'zod';
 import type {
   AgentCallbacks,
@@ -165,6 +166,8 @@ export class ClaudeAgentRuntime implements AgentRuntime {
         agents,
         mcpServers: { [COORDINATION_SERVER]: coordinationServer(options.coordination) },
         includePartialMessages: true,
+        // En la app instalada, la CLI que trae el SDK se pasa por ruta (fuera del asar).
+        ...(isAbsolute(this.cliCommand) ? { pathToClaudeCodeExecutable: this.cliCommand } : {}),
         abortController: abort,
         ...(options.resumeId ? { resume: options.resumeId } : {}),
         stderr: (data) => {
