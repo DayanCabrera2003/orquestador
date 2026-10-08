@@ -14,7 +14,7 @@ export function addSession(flow: Flow, session: SessionNode): Result<Flow, Sessi
   return ok({ ...flow, sessions: [...flow.sessions, session] });
 }
 
-/** Quita una sesión. Quien le reportaba pasa a reportar al usuario y deja de ser subagente de otros. */
+/** Quita una sesión. Quienes le reportaban pasan a reportar al usuario, y sale de las listas de subagentes. */
 export function removeSession(flow: Flow, id: string): Flow {
   if (!findSession(flow, id)) return flow;
   return {
