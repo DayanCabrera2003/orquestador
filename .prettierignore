@@ -2,3 +2,4 @@ pnpm-lock.yaml
 CHANGELOG.md
 dist/
 coverage/
+.release-please-manifest.json
