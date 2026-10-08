@@ -9,7 +9,9 @@ export type RelationEdgeType = Edge<RelationEdgeData, 'relation'>;
 
 function RelationEdgeView(props: EdgeProps<RelationEdgeType>) {
   const { id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, data } = props;
-  const pulses = useRuntime((s) => s.pulses.filter((p) => p.edgeId === id));
+  // Se selecciona el arreglo completo (referencia estable) y se filtra fuera del selector.
+  const allPulses = useRuntime((s) => s.pulses);
+  const pulses = allPulses.filter((p) => p.edgeId === id);
   const [path] = getBezierPath({
     sourceX,
     sourceY,
