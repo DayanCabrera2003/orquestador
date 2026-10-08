@@ -1,6 +1,6 @@
 {
   "name": "orquestador",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "Orquestador de sesiones de agentes de código como nodos en un lienzo",
   "license": "MIT",
