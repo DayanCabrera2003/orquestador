@@ -28,3 +28,7 @@ docs/superpowers/
 
 # Datos del motor en desarrollo
 .dev-data/
+
+# Builds de la app de escritorio
+apps/desktop/out/
+apps/desktop/release/
