@@ -78,8 +78,8 @@ export type InboxItem = z.infer<typeof InboxItemSchema>;
 export const ToolStatusSchema = z.object({
   found: z.boolean(),
   version: z.string().nullable(),
-  /** Explicación para el usuario cuando falta o no está lista. */
-  problem: z.string().nullable(),
+  /** Por qué no está lista. La UI traduce el código a un texto con instrucciones. */
+  problem: z.enum(['not-found', 'not-authenticated', 'failed']).nullable(),
 });
 
 export const EnvironmentSchema = z.object({
