@@ -7,11 +7,16 @@ import type { AppContext } from './context';
  */
 export const DEFAULT_SETTINGS: Settings = {
   pricing: {
-    opus: { inputPerMTok: 5, outputPerMTok: 25, cacheReadPerMTok: 0.5, cacheWritePerMTok: 6.25 },
-    sonnet: { inputPerMTok: 3, outputPerMTok: 15, cacheReadPerMTok: 0.3, cacheWritePerMTok: 3.75 },
-    haiku: { inputPerMTok: 1, outputPerMTok: 5, cacheReadPerMTok: 0.1, cacheWritePerMTok: 1.25 },
+    opus: { inputPerMTok: 4, outputPerMTok: 20, cacheReadPerMTok: 0.2, cacheWritePerMTok: 5 },
+    sonnet: { inputPerMTok: 2, outputPerMTok: 10, cacheReadPerMTok: 0.2, cacheWritePerMTok: 2.5 },
+    haiku: {
+      inputPerMTok: 0.1,
+      outputPerMTok: 0.5,
+      cacheReadPerMTok: 0.01,
+      cacheWritePerMTok: 0.125,
+    },
   },
-  contextWindow: { opus: 200_000, sonnet: 200_000, haiku: 200_000 },
+  contextWindow: { opus: 1_000_000, sonnet: 1_000_000, haiku: 1_000_000 },
 };
 
 export function getSettings({ store }: AppContext): Settings {

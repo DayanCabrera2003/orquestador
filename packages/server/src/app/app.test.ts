@@ -98,7 +98,7 @@ describe('RuntimeRegistry', () => {
       status: 'thinking',
       currentTask: 'Escribiendo tests',
       contextTokens: 5000,
-      costUsd: 1,
+      costUsd: 0.1,
     });
   });
 });
