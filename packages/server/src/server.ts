@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { SystemEnvironmentProbe } from './adapters/env/environmentProbe';
 import { GitWorkspace } from './adapters/git/gitWorkspace';
 import { ClaudeAgentRuntime } from './adapters/agent-sdk/claudeAgentRuntime';
+import { NodePtyTerminal } from './adapters/pty/nodePtyTerminal';
 import { SqliteStore } from './adapters/sqlite/sqliteStore';
 import type { AppContext } from './app/context';
 import { AppError } from './app/errors';
@@ -12,6 +13,7 @@ import * as flows from './app/flows';
 import * as projects from './app/projects';
 import { RuntimeRegistry } from './app/runtime';
 import { SessionManager } from './app/sessions';
+import { TerminalManager } from './app/terminals';
 import * as settings from './app/settings';
 import type { Handlers } from './http/routes';
 import { registerRoutes } from './http/routes';
@@ -44,7 +46,7 @@ export interface RunningServer {
   close: () => Promise<void>;
 }
 
-function commandHandler(sessions: SessionManager): CommandHandler {
+function commandHandler(sessions: SessionManager, terminals: TerminalManager): CommandHandler {
   return async (command) => {
     switch (command.type) {
       case 'flow.subscribe':
@@ -65,9 +67,20 @@ function commandHandler(sessions: SessionManager): CommandHandler {
       case 'inbox.answer':
         return sessions.answerInbox(command.itemId, command.answer);
       case 'terminal.open':
+        return terminals.openTerminal(
+          command.flowId,
+          command.sessionId,
+          command.cols,
+          command.rows,
+        );
       case 'terminal.input':
+        terminals.input(command.flowId, command.sessionId, command.data);
+        return;
       case 'terminal.resize':
+        terminals.resize(command.flowId, command.sessionId, command.cols, command.rows);
+        return;
       case 'terminal.close':
+        terminals.close(command.flowId, command.sessionId);
         return;
     }
   };
@@ -122,11 +135,12 @@ export async function startServer(options: ServerOptions): Promise<RunningServer
   registerSecurity(app, { token: options.token, allowedOrigins: options.allowedOrigins });
   const agents =
     options.agentRuntime ??
-    new ClaudeAgentRuntime((line) => {
+    new ClaudeAgentRuntime(options.agentCommand, (line) => {
       app.log.debug({ agent: line.trim() });
     });
   const sessions = new SessionManager(context, runtime, agents, options.worktreesDir);
-  await registerGateway(app, context.events, commandHandler(sessions));
+  const terminals = new TerminalManager(context, sessions, agents, new NodePtyTerminal());
+  await registerGateway(app, context.events, commandHandler(sessions, terminals));
   registerRoutes(app, handlers(context, runtime));
 
   await app.listen({ host: '127.0.0.1', port: options.port });
@@ -140,6 +154,7 @@ export async function startServer(options: ServerOptions): Promise<RunningServer
     runtime,
     sessions,
     close: async () => {
+      terminals.closeAll();
       sessions.closeAll();
       await app.close();
       context.store.close();
