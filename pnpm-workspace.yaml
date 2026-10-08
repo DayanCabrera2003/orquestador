@@ -5,3 +5,4 @@ packages:
 # Dependencias autorizadas a ejecutar scripts de instalación (pnpm 10 los bloquea por defecto).
 onlyBuiltDependencies:
   - esbuild
+  - node-pty
