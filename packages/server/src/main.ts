@@ -12,6 +12,7 @@ const server = await startServer({
   allowedOrigins: ['http://localhost:5173', 'http://127.0.0.1:5173'],
   port: Number(process.env.ORQ_PORT ?? 4317),
   agentCommand: process.env.ORQ_AGENT_COMMAND ?? 'claude',
+  worktreesDir: join(dataDir, 'worktrees'),
   logger: true,
 });
 

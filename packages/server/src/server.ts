@@ -3,6 +3,7 @@ import Fastify, { type FastifyInstance } from 'fastify';
 import { randomUUID } from 'node:crypto';
 import { SystemEnvironmentProbe } from './adapters/env/environmentProbe';
 import { GitWorkspace } from './adapters/git/gitWorkspace';
+import { ClaudeAgentRuntime } from './adapters/agent-sdk/claudeAgentRuntime';
 import { SqliteStore } from './adapters/sqlite/sqliteStore';
 import type { AppContext } from './app/context';
 import { AppError } from './app/errors';
@@ -10,10 +11,12 @@ import { EventBus } from './app/events';
 import * as flows from './app/flows';
 import * as projects from './app/projects';
 import { RuntimeRegistry } from './app/runtime';
+import { SessionManager } from './app/sessions';
 import * as settings from './app/settings';
 import type { Handlers } from './http/routes';
 import { registerRoutes } from './http/routes';
 import { registerSecurity } from './http/security';
+import type { AgentRuntime } from './ports/AgentRuntime';
 import { registerGateway, type CommandHandler } from './ws/gateway';
 
 export interface ServerOptions {
@@ -25,7 +28,11 @@ export interface ServerOptions {
   port: number;
   /** Comando de la CLI del agente. */
   agentCommand: string;
+  /** Carpeta donde se crean los worktrees de las sesiones. */
+  worktreesDir: string;
   logger: boolean;
+  /** Ejecutor de sesiones; por defecto, el SDK del agente. */
+  agentRuntime?: AgentRuntime;
 }
 
 export interface RunningServer {
@@ -33,7 +40,37 @@ export interface RunningServer {
   app: FastifyInstance;
   context: AppContext;
   runtime: RuntimeRegistry;
+  sessions: SessionManager;
   close: () => Promise<void>;
+}
+
+function commandHandler(sessions: SessionManager): CommandHandler {
+  return async (command) => {
+    switch (command.type) {
+      case 'flow.subscribe':
+        return;
+      case 'flow.start':
+        return sessions.startFlow(command.flowId);
+      case 'flow.pause':
+        return sessions.pauseFlow(command.flowId);
+      case 'session.start':
+        await sessions.start(command.flowId, command.sessionId);
+        return;
+      case 'session.pause':
+        return sessions.pause(command.flowId, command.sessionId);
+      case 'session.resume':
+        return sessions.resume(command.flowId, command.sessionId);
+      case 'session.send':
+        return sessions.deliver(command.flowId, command.sessionId, { kind: 'user' }, command.text);
+      case 'inbox.answer':
+        return sessions.answerInbox(command.itemId, command.answer);
+      case 'terminal.open':
+      case 'terminal.input':
+      case 'terminal.resize':
+      case 'terminal.close':
+        return;
+    }
+  };
 }
 
 function handlers(ctx: AppContext, runtime: RuntimeRegistry): Handlers {
@@ -69,11 +106,7 @@ function handlers(ctx: AppContext, runtime: RuntimeRegistry): Handlers {
 }
 
 /** Arranca el motor local. */
-export async function startServer(
-  options: ServerOptions,
-  onCommand: (ctx: AppContext, runtime: RuntimeRegistry) => CommandHandler = () => () =>
-    Promise.resolve(),
-): Promise<RunningServer> {
+export async function startServer(options: ServerOptions): Promise<RunningServer> {
   const context: AppContext = {
     store: new SqliteStore(options.databasePath),
     workspace: new GitWorkspace(),
@@ -87,7 +120,13 @@ export async function startServer(
   const app = Fastify({ logger: options.logger, forceCloseConnections: true });
 
   registerSecurity(app, { token: options.token, allowedOrigins: options.allowedOrigins });
-  await registerGateway(app, context.events, onCommand(context, runtime));
+  const agents =
+    options.agentRuntime ??
+    new ClaudeAgentRuntime((line) => {
+      app.log.debug({ agent: line.trim() });
+    });
+  const sessions = new SessionManager(context, runtime, agents, options.worktreesDir);
+  await registerGateway(app, context.events, commandHandler(sessions));
   registerRoutes(app, handlers(context, runtime));
 
   await app.listen({ host: '127.0.0.1', port: options.port });
@@ -99,7 +138,9 @@ export async function startServer(
     app,
     context,
     runtime,
+    sessions,
     close: async () => {
+      sessions.closeAll();
       await app.close();
       context.store.close();
     },

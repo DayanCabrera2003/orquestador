@@ -35,6 +35,7 @@ beforeAll(async () => {
     allowedOrigins: [ORIGIN],
     port: 0,
     agentCommand: 'comando-que-no-existe',
+    worktreesDir: join(tmpdir(), 'orq-wt-test'),
     logger: false,
   });
   base = `http://127.0.0.1:${String(server.port)}`;
