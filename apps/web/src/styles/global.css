@@ -61,3 +61,14 @@ select {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* Tono de cada modelo: lo heredan medallas, bordes y aristas. */
+[data-model='opus'] {
+  --tone: var(--tone-opus);
+}
+[data-model='sonnet'] {
+  --tone: var(--tone-sonnet);
+}
+[data-model='haiku'] {
+  --tone: var(--tone-haiku);
+}
