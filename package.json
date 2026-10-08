@@ -14,7 +14,8 @@
     "typecheck": "pnpm -r --if-present run typecheck",
     "lint": "prettier --check . && eslint .",
     "test": "pnpm -r --if-present run test",
-    "build": "pnpm -r --if-present run build"
+    "build": "pnpm -r --if-present run build",
+    "dev:server": "pnpm --filter @orquestador/server dev"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

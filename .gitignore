@@ -25,3 +25,6 @@ CLAUDE.local.md
 .claude/
 .mcp.json
 docs/superpowers/
+
+# Datos del motor en desarrollo
+.dev-data/
