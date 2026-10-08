@@ -15,7 +15,8 @@
     "lint": "prettier --check . && eslint .",
     "test": "pnpm -r --if-present run test",
     "build": "pnpm -r --if-present run build",
-    "dev:server": "pnpm --filter @orquestador/server dev"
+    "dev:server": "pnpm --filter @orquestador/server dev",
+    "dev:web": "pnpm --filter @orquestador/web dev"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
