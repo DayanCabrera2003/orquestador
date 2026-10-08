@@ -62,7 +62,7 @@ export function UsageTab({ sessionId }: { sessionId: string }) {
     cacheReadTokens: 0,
     cacheWriteTokens: 0,
   };
-  const window = contextWindow?.[session.model] ?? 200_000;
+  const window = contextWindow?.[session.model] ?? 1_000_000;
   const ctx = runtime?.contextTokens ?? 0;
 
   return (

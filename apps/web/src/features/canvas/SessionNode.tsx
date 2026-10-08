@@ -26,7 +26,7 @@ function SessionNodeView({ data }: NodeProps<SessionNodeType>) {
   const status = runtime?.status ?? 'idle';
   const task = runtime && runtime.currentTask.length > 0 ? runtime.currentTask : t('node.noTask');
   const tokens = runtime ? runtime.usage.inputTokens + runtime.usage.outputTokens : 0;
-  const ctxPct = percent(runtime?.contextTokens ?? 0, contextWindow?.[session.model] ?? 200_000);
+  const ctxPct = percent(runtime?.contextTokens ?? 0, contextWindow?.[session.model] ?? 1_000_000);
   const parent = session.reportsTo ? findSession(flow, session.reportsTo) : undefined;
   const owners = subagentOwnersOf(flow, session.id);
   const reportsLabel = parent
