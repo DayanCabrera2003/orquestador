@@ -12,7 +12,7 @@ importers:
         specifier: ^24.19.1
         version: 24.19.1
       typescript:
-        specifier: 6.0.3
+        specifier: ~6.0.3
         version: 6.0.3
 
 packages:
