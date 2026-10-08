@@ -85,7 +85,7 @@ jobs:
           TAG: ${{ needs.release-please.outputs.tag_name }}
         run: |
           shopt -s nullglob
-          files=(apps/desktop/release/*.{AppImage,deb,dmg,zip,exe,blockmap,yml})
+          files=(apps/desktop/release/*.{AppImage,deb,dmg,zip,exe,blockmap} apps/desktop/release/latest*.yml)
           if [ ${#files[@]} -eq 0 ]; then
             echo "::error::electron-builder no generó ningún instalador."
             exit 1
