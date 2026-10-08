@@ -30,7 +30,7 @@ export default defineConfig(
   {
     languageOptions: {
       parserOptions: {
-        projectService: { allowDefaultProject: ['*.mjs'] },
+        projectService: { allowDefaultProject: ['*.mjs', 'apps/*/*.mjs'] },
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -40,7 +40,7 @@ export default defineConfig(
     },
   },
   {
-    files: ['*.mjs'],
+    files: ['*.mjs', 'apps/*/*.mjs'],
     extends: [tseslint.configs.disableTypeChecked],
     languageOptions: { globals: globals.node },
   },
