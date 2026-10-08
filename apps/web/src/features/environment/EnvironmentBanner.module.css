@@ -1,0 +1,11 @@
+.banner {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--crit);
+  background: color-mix(in srgb, var(--crit) 6%, var(--bg));
+  border-bottom: 1px solid color-mix(in srgb, var(--crit) 25%, transparent);
+}
