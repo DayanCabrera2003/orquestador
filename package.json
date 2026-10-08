@@ -9,13 +9,16 @@
     "node": ">=22"
   },
   "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "typecheck": "pnpm -r --if-present run typecheck",
-    "lint": "pnpm -r --if-present run lint",
+    "lint": "prettier --check . && pnpm -r --if-present run lint",
     "test": "pnpm -r --if-present run test",
     "build": "pnpm -r --if-present run build"
   },
   "devDependencies": {
     "@types/node": "^24.19.1",
+    "prettier": "^3.9.9",
     "typescript": "~6.0.3"
   }
 }
