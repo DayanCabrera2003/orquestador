@@ -13,5 +13,9 @@
     "lint": "pnpm -r --if-present run lint",
     "test": "pnpm -r --if-present run test",
     "build": "pnpm -r --if-present run build"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.1",
+    "typescript": "6.0.3"
   }
 }
