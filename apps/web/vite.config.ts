@@ -7,6 +7,8 @@ export default defineConfig({
   plugins: [react()],
   // Rutas relativas: el build se carga desde la app de escritorio, no desde la raíz de un dominio.
   base: './',
+  // La app se carga desde disco en el escritorio: un bundle único no penaliza la carga.
+  build: { chunkSizeWarningLimit: 1000 },
   server: {
     port: 5173,
     strictPort: true,
