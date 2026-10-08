@@ -1,0 +1,90 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    name: Preparar versión
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.rp.outputs.release_created }}
+      tag_name: ${{ steps.rp.outputs.tag_name }}
+      version: ${{ steps.rp.outputs.version }}
+    steps:
+      - id: rp
+        uses: googleapis/release-please-action@v4
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  instaladores:
+    name: Instalador ${{ matrix.os }}
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release-please.outputs.tag_name }}
+
+      - name: Comprobar que existe la app de escritorio
+        id: desktop
+        run: |
+          if [ -f apps/desktop/package.json ]; then
+            echo "existe=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "existe=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Todavía no existe apps/desktop; esta versión se publica sin instaladores."
+          fi
+
+      - uses: pnpm/action-setup@v4
+        if: steps.desktop.outputs.existe == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.desktop.outputs.existe == 'true'
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Instalar dependencias
+        if: steps.desktop.outputs.existe == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Compilar el workspace
+        if: steps.desktop.outputs.existe == 'true'
+        run: pnpm build
+
+      - name: Construir instaladores
+        if: steps.desktop.outputs.existe == 'true'
+        working-directory: apps/desktop
+        run: >
+          pnpm exec electron-builder --publish never
+          -c.extraMetadata.version=${{ needs.release-please.outputs.version }}
+          -c.directories.output=release
+
+      - name: Subir instaladores al release
+        if: steps.desktop.outputs.existe == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: |
+          shopt -s nullglob
+          files=(apps/desktop/release/*.{AppImage,deb,dmg,zip,exe,blockmap,yml})
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "::error::electron-builder no generó ningún instalador."
+            exit 1
+          fi
+          gh release upload "$TAG" "${files[@]}" --clobber
