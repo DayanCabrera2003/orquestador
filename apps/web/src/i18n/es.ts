@@ -57,6 +57,12 @@ export const es = {
     empty: 'Este proyecto no tiene flujos todavía.',
     sessions: '{n} sesiones',
     back: 'Proyectos',
+    rename: 'Renombrar',
+    duplicate: 'Duplicar',
+    delete: 'Eliminar',
+    confirmDelete: '¿Eliminar este flujo? Se borran sus sesiones y su historial.',
+    save: 'Guardar',
+    cancel: 'Cancelar',
   },
   topbar: {
     sessions: 'Sesiones',
@@ -185,6 +191,12 @@ export const es = {
     agentMissing: 'No se encontró la CLI del agente. Instálala y vuelve a abrir la app.',
     agentFailed:
       'La CLI del agente no respondió correctamente. Comprueba que funciona en una terminal.',
+    gitHelpLinux:
+      'Instálalo con el gestor de paquetes de tu distribución, por ejemplo: sudo apt install git o sudo dnf install git.',
+    gitHelpDarwin: 'Instálalo con: xcode-select --install (o brew install git).',
+    gitHelpWin32: 'Descárgalo de git-scm.com e instálalo; después reinicia la app.',
+    agentHelp:
+      'Instala la CLI del agente siguiendo su documentación oficial e inicia sesión una vez en una terminal.',
   },
   confirm: {
     yes: 'Sí, eliminar',

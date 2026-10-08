@@ -82,12 +82,121 @@ function ProjectList() {
   );
 }
 
+function FlowItem({ id, name, sessions }: { id: string; name: string; sessions: number }) {
+  const openFlow = useApp((s) => s.openFlow);
+  const renameFlow = useApp((s) => s.renameFlow);
+  const duplicateFlow = useApp((s) => s.duplicateFlow);
+  const deleteFlow = useApp((s) => s.deleteFlow);
+  const [editing, setEditing] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [value, setValue] = useState(name);
+
+  if (editing) {
+    return (
+      <li>
+        <form
+          className={styles.open}
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (value.trim())
+              void renameFlow(id, value.trim()).then(() => {
+                setEditing(false);
+              });
+          }}
+        >
+          <input
+            className={ui.input}
+            value={value}
+            autoFocus
+            aria-label={t('flows.rename')}
+            onChange={(e) => {
+              setValue(e.target.value);
+            }}
+          />
+          <button type="submit" className={cx(ui.btn, ui.primary)}>
+            {t('flows.save')}
+          </button>
+          <button
+            type="button"
+            className={ui.btn}
+            onClick={() => {
+              setEditing(false);
+            }}
+          >
+            {t('flows.cancel')}
+          </button>
+        </form>
+      </li>
+    );
+  }
+
+  return (
+    <li>
+      <button
+        className={styles.item}
+        onClick={() => {
+          openFlow(id);
+        }}
+      >
+        <b className={styles.mono}>{name}</b>
+        <span>{confirming ? t('flows.confirmDelete') : t('flows.sessions', { n: sessions })}</span>
+      </button>
+      {confirming ? (
+        <>
+          <button
+            className={cx(ui.btn, ui.small)}
+            onClick={() => {
+              void deleteFlow(id);
+            }}
+          >
+            {t('confirm.yes')}
+          </button>
+          <button
+            className={cx(ui.btn, ui.small)}
+            onClick={() => {
+              setConfirming(false);
+            }}
+          >
+            {t('confirm.no')}
+          </button>
+        </>
+      ) : (
+        <>
+          <button
+            className={cx(ui.btn, ui.small)}
+            onClick={() => {
+              setEditing(true);
+            }}
+          >
+            {t('flows.rename')}
+          </button>
+          <button
+            className={cx(ui.btn, ui.small)}
+            onClick={() => {
+              void duplicateFlow(id);
+            }}
+          >
+            {t('flows.duplicate')}
+          </button>
+          <button
+            className={cx(ui.btn, ui.small)}
+            onClick={() => {
+              setConfirming(true);
+            }}
+          >
+            {t('flows.delete')}
+          </button>
+        </>
+      )}
+    </li>
+  );
+}
+
 function FlowList() {
   const project = useApp((s) => s.projects.find((p) => p.id === s.projectId));
   const flows = useApp((s) => s.flows);
   const selectProject = useApp((s) => s.selectProject);
   const createFlow = useApp((s) => s.createFlow);
-  const openFlow = useApp((s) => s.openFlow);
   const [name, setName] = useState('');
   if (!project) return null;
 
@@ -128,17 +237,7 @@ function FlowList() {
       {flows.length === 0 && <p className={styles.empty}>{t('flows.empty')}</p>}
       <ul className={styles.list}>
         {flows.map((f) => (
-          <li key={f.id}>
-            <button
-              className={styles.item}
-              onClick={() => {
-                openFlow(f.id);
-              }}
-            >
-              <b className={styles.mono}>{f.name}</b>
-              <span>{t('flows.sessions', { n: f.sessionCount })}</span>
-            </button>
-          </li>
+          <FlowItem key={f.id} id={f.id} name={f.name} sessions={f.sessionCount} />
         ))}
       </ul>
     </>

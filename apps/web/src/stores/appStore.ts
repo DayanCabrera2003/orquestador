@@ -20,6 +20,9 @@ interface AppState {
   refreshFlows: () => Promise<void>;
   createFlow: (name: string) => Promise<void>;
   openFlow: (id: string | null) => void;
+  renameFlow: (id: string, name: string) => Promise<void>;
+  duplicateFlow: (id: string) => Promise<void>;
+  deleteFlow: (id: string) => Promise<void>;
 }
 
 export const useApp = create<AppState>((set, get) => ({
@@ -98,5 +101,37 @@ export const useApp = create<AppState>((set, get) => ({
 
   openFlow: (id) => {
     set({ flowId: id });
+  },
+
+  renameFlow: async (id, name) => {
+    try {
+      const flow = await request('getFlow', { flowId: id });
+      await request('putFlow', { flowId: id }, { ...flow, name });
+      await get().refreshFlows();
+    } catch (e) {
+      reportError(e);
+    }
+  },
+
+  duplicateFlow: async (id) => {
+    const projectId = get().projectId;
+    if (!projectId) return;
+    try {
+      const { yaml } = await request('exportFlowYaml', { flowId: id });
+      const copy = await request('importFlowYaml', { projectId }, { yaml });
+      await request('putFlow', { flowId: copy.id }, { ...copy, name: `${copy.name} (copia)` });
+      await get().refreshFlows();
+    } catch (e) {
+      reportError(e);
+    }
+  },
+
+  deleteFlow: async (id) => {
+    try {
+      await request('deleteFlow', { flowId: id });
+      await get().refreshFlows();
+    } catch (e) {
+      reportError(e);
+    }
   },
 }));
