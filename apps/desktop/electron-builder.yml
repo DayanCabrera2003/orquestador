@@ -30,6 +30,8 @@ linux:
   category: Development
   maintainer: Dayan Cabrera <DayanCabrera2003@users.noreply.github.com>
   synopsis: Orquestador de sesiones de agentes de código
+deb:
+  packageName: orquestador
 mac:
   target: [dmg, zip]
   category: public.app-category.developer-tools
