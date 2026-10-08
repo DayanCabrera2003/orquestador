@@ -70,6 +70,9 @@ jobs:
       - name: Construir instaladores
         if: steps.desktop.outputs.existe == 'true'
         working-directory: apps/desktop
+        env:
+          # Sin certificados todavía: no intentar firmar.
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
         run: >
           pnpm exec electron-builder --publish never
           -c.extraMetadata.version=${{ needs.release-please.outputs.version }}
