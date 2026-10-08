@@ -41,9 +41,7 @@ export function TopBar() {
   const list = Object.values(runtimes);
   const cost = list.reduce((sum, r) => sum + r.costUsd, 0);
   const tokens = list.reduce((sum, r) => sum + r.usage.inputTokens + r.usage.outputTokens, 0);
-  const running = list.some(
-    (r) => r.status === 'thinking' || r.status === 'waiting' || r.status === 'blocked',
-  );
+  const running = list.some((r) => r.status === 'thinking' || r.status === 'blocked');
 
   return (
     <header className={styles.top}>
