@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { makeFlow, makeSession } from './fixtures';
-import { childrenOf, findSession, subagentOwnersOf } from './graph';
+import { childrenOf, escalationChain, findSession, subagentOwnersOf } from './graph';
 
 const flow = makeFlow([
   makeSession({ id: 'lider', role: 'lider', model: 'opus', subagents: ['revisor'] }),
@@ -24,5 +24,32 @@ describe('consultas del grafo', () => {
   it('subagentOwnersOf devuelve quienes pueden invocarla', () => {
     expect(subagentOwnersOf(flow, 'revisor').map((s) => s.id)).toEqual(['lider']);
     expect(subagentOwnersOf(flow, 'e1')).toEqual([]);
+  });
+});
+
+describe('escalationChain', () => {
+  it('sube desde la sesión hasta la raíz', () => {
+    expect(escalationChain(flow, 'e1').map((s) => s.id)).toEqual(['consultor', 'lider']);
+  });
+
+  it('es vacía para una raíz', () => {
+    expect(escalationChain(flow, 'lider')).toEqual([]);
+  });
+
+  it('es vacía para una sesión desconocida', () => {
+    expect(escalationChain(flow, 'nadie')).toEqual([]);
+  });
+
+  it('se detiene si encuentra un ciclo en datos corruptos', () => {
+    const corrupto = makeFlow([
+      makeSession({ id: 'a', reportsTo: 'b' }),
+      makeSession({ id: 'b', reportsTo: 'a' }),
+    ]);
+    expect(escalationChain(corrupto, 'a').map((s) => s.id)).toEqual(['b']);
+  });
+
+  it('ignora un padre inexistente', () => {
+    const roto = makeFlow([makeSession({ id: 'a', reportsTo: 'fantasma' })]);
+    expect(escalationChain(roto, 'a')).toEqual([]);
   });
 });
