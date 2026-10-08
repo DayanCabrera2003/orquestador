@@ -100,10 +100,10 @@ export function Canvas() {
       const kind = handle === HANDLES.reportOut ? 'report' : 'subagent';
       const point = pointOf(event);
       const element = document.elementFromPoint(point.x, point.y);
-      const targetId =
-        state.toNode?.id ??
-        element?.closest('.react-flow__node')?.getAttribute('data-id') ??
-        undefined;
+      // Gana el nodo bajo el cursor; el imán de conectores de React Flow solo se usa si no hay ninguno.
+      const underPointer =
+        element?.closest('.react-flow__node')?.getAttribute('data-id') ?? undefined;
+      const targetId = underPointer ?? state.toNode?.id;
       if (targetId && targetId !== fromId) {
         link(fromId, targetId, kind);
       } else if (!targetId && element?.closest('.react-flow__pane')) {
@@ -169,7 +169,6 @@ export function Canvas() {
         maxZoom={1.8}
         fitView
         fitViewOptions={{ padding: 0.25, maxZoom: 1 }}
-        proOptions={{ hideAttribution: true }}
       >
         <Background
           variant={BackgroundVariant.Dots}

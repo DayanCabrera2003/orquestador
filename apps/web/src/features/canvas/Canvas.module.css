@@ -123,3 +123,13 @@
   border-radius: 5px;
   padding: 1px 5px;
 }
+
+.canvas :global(.react-flow__attribution) {
+  background: transparent;
+  font-size: 9px;
+  opacity: 0.35;
+  bottom: 52px;
+}
+.canvas :global(.react-flow__attribution a) {
+  color: var(--muted);
+}
