@@ -1,5 +1,5 @@
 import { execa } from 'execa';
-import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -14,6 +14,20 @@ beforeAll(async () => {
   mkdirSync(join(dir, 'plain'));
   writeFileSync(join(dir, 'file.txt'), 'x');
   await execa('git', ['init', '-q', join(dir, 'repo')]);
+  await execa('git', ['init', '-q', join(dir, 'vacio')]);
+  writeFileSync(join(dir, 'repo', 'README.md'), 'hola');
+  await execa('git', ['-C', join(dir, 'repo'), 'add', '.']);
+  await execa('git', [
+    '-C',
+    join(dir, 'repo'),
+    '-c',
+    'user.name=t',
+    '-c',
+    'user.email=t@t',
+    'commit',
+    '-qm',
+    'init',
+  ]);
 });
 
 afterAll(() => {
@@ -42,5 +56,28 @@ describe('GitWorkspace.inspectRepository', () => {
       ok: false,
       reason: 'not-found',
     });
+  });
+});
+
+describe('GitWorkspace.ensureWorktree', () => {
+  it('crea el worktree con su rama y lo reutiliza después', async () => {
+    const path = join(dir, 'wt', 'e1');
+    expect(await ws.ensureWorktree(join(dir, 'repo'), path, 'orq/f1/e1')).toEqual({
+      ok: true,
+      path,
+      branch: 'orq/f1/e1',
+    });
+    expect(readFileSync(join(path, 'README.md'), 'utf8')).toBe('hola');
+    expect(await ws.ensureWorktree(join(dir, 'repo'), path, 'orq/f1/e1')).toEqual({
+      ok: true,
+      path,
+      branch: 'orq/f1/e1',
+    });
+  });
+
+  it('informa cuando el repositorio no tiene commits', async () => {
+    const r = await ws.ensureWorktree(join(dir, 'vacio'), join(dir, 'wt', 'x'), 'orq/x');
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.reason).toBe('no-commits');
   });
 });

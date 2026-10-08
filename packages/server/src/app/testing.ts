@@ -11,6 +11,7 @@ export function makeTestContext(repos: Record<string, RepositoryInspection> = {}
     workspace: {
       inspectRepository: (path) =>
         Promise.resolve(repos[path] ?? { ok: false, reason: 'not-found' }),
+      ensureWorktree: (_root, path, branch) => Promise.resolve({ ok: true, path, branch }),
     },
     environment: {
       detect: () =>
