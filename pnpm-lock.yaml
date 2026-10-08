@@ -48,6 +48,9 @@ importers:
       '@orquestador/server':
         specifier: workspace:*
         version: link:../../packages/server
+      '@orquestador/web':
+        specifier: workspace:*
+        version: link:../web
       electron:
         specifier: 44.4.5
         version: 44.4.5
@@ -57,6 +60,25 @@ importers:
       esbuild:
         specifier: ~0.25.12
         version: 0.25.12
+    optionalDependencies:
+      '@anthropic-ai/claude-agent-sdk-darwin-arm64':
+        specifier: ~0.3.295
+        version: 0.3.295
+      '@anthropic-ai/claude-agent-sdk-darwin-x64':
+        specifier: ~0.3.295
+        version: 0.3.295
+      '@anthropic-ai/claude-agent-sdk-linux-arm64':
+        specifier: ~0.3.295
+        version: 0.3.295
+      '@anthropic-ai/claude-agent-sdk-linux-x64':
+        specifier: ~0.3.295
+        version: 0.3.295
+      '@anthropic-ai/claude-agent-sdk-win32-arm64':
+        specifier: ~0.3.295
+        version: 0.3.295
+      '@anthropic-ai/claude-agent-sdk-win32-x64':
+        specifier: ~0.3.295
+        version: 0.3.295
 
   apps/web:
     dependencies:

@@ -21,8 +21,18 @@
   },
   "devDependencies": {
     "@orquestador/server": "workspace:*",
+    "@orquestador/web": "workspace:*",
     "electron": "44.4.5",
     "electron-builder": "26.16.1",
     "esbuild": "~0.25.12"
+  },
+  "desktopName": "orquestador.desktop",
+  "optionalDependencies": {
+    "@anthropic-ai/claude-agent-sdk-darwin-arm64": "~0.3.295",
+    "@anthropic-ai/claude-agent-sdk-darwin-x64": "~0.3.295",
+    "@anthropic-ai/claude-agent-sdk-linux-arm64": "~0.3.295",
+    "@anthropic-ai/claude-agent-sdk-linux-x64": "~0.3.295",
+    "@anthropic-ai/claude-agent-sdk-win32-arm64": "~0.3.295",
+    "@anthropic-ai/claude-agent-sdk-win32-x64": "~0.3.295"
   }
 }
