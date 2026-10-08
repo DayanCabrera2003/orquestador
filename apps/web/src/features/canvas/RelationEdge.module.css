@@ -1,0 +1,28 @@
+.report,
+.subagent {
+  fill: none;
+  stroke: var(--tone) !important;
+  stroke-width: 1.4 !important;
+  opacity: 0.55;
+  transition:
+    opacity 0.15s,
+    stroke 0.15s;
+}
+.subagent {
+  stroke-dasharray: 5 6;
+  animation: dash 1.4s linear infinite;
+}
+.group:hover .report,
+.group:hover .subagent {
+  opacity: 1;
+  stroke: var(--crit) !important;
+  stroke-width: 2.2 !important;
+}
+.pulse {
+  fill: var(--fg);
+}
+@keyframes dash {
+  to {
+    stroke-dashoffset: -22;
+  }
+}
