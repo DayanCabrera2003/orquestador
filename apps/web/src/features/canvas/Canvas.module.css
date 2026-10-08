@@ -1,0 +1,125 @@
+.canvas {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  background: var(--bg);
+}
+.canvas :global(.react-flow__node) {
+  border: 0;
+  background: none;
+  padding: 0;
+}
+.canvas :global(.react-flow__edge-interaction) {
+  cursor: pointer;
+}
+.legend {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 5;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+  max-width: calc(100% - 28px);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 99px;
+  background: rgba(17, 17, 17, 0.85);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(10px);
+  font-size: 11.5px;
+  color: var(--fg-2);
+}
+.hint {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-left: 6px;
+}
+.empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--muted);
+  pointer-events: none;
+  z-index: 4;
+}
+.empty b {
+  color: var(--fg);
+  font-size: 15px;
+  font-weight: 600;
+}
+.zoom {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 5;
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 11px;
+  background: rgba(17, 17, 17, 0.85);
+  border: 1px solid var(--line);
+}
+.zoom button {
+  width: 30px;
+  height: 28px;
+  border-radius: 8px;
+  color: var(--fg-2);
+  font-size: 15px;
+}
+.zoom button:hover {
+  background: var(--surface-3);
+  color: var(--fg);
+}
+.fab {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 16px 0 8px;
+  border-radius: 99px;
+  background: rgba(22, 22, 22, 0.92);
+  border: 1px solid var(--line-2);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+  font-size: 13px;
+  font-weight: 500;
+  transition: border-color 0.2s;
+}
+.fab:hover {
+  border-color: var(--fg-2);
+}
+.plus {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--primary);
+  color: var(--primary-ink);
+  font-size: 18px;
+  line-height: 1;
+}
+.kbd {
+  font: 10.5px var(--font-mono);
+  color: var(--muted);
+  border: 1px solid var(--line-2);
+  border-radius: 5px;
+  padding: 1px 5px;
+}
