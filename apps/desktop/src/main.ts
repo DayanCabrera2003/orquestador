@@ -1,5 +1,15 @@
 // Proceso principal: ventana, ciclo de vida del motor, protocolo de la interfaz y actualizaciones.
-import { app, BrowserWindow, dialog, ipcMain, net, protocol, shell, utilityProcess, type UtilityProcess } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  dialog,
+  ipcMain,
+  net,
+  protocol,
+  shell,
+  utilityProcess,
+  type UtilityProcess,
+} from 'electron';
 import electronUpdater from 'electron-updater';
 import { randomBytes } from 'node:crypto';
 import { createWriteStream, mkdirSync } from 'node:fs';
@@ -22,7 +32,9 @@ let enginePort = 0;
 let quitting = false;
 
 const rendererDir = (): string =>
-  app.isPackaged ? join(process.resourcesPath, 'renderer') : join(import.meta.dirname, '..', '..', 'web', 'dist');
+  app.isPackaged
+    ? join(process.resourcesPath, 'renderer')
+    : join(import.meta.dirname, '..', '..', 'web', 'dist');
 
 /** CLI del agente que trae el SDK; si no está, se usa la del sistema. */
 function agentCommand(): string {
@@ -88,7 +100,9 @@ function registerProtocol(): void {
   ].join('; ');
   protocol.handle(SCHEME, async (request) => {
     const { pathname } = new URL(request.url);
-    const file = normalize(join(root, decodeURIComponent(pathname === '/' ? '/index.html' : pathname)));
+    const file = normalize(
+      join(root, decodeURIComponent(pathname === '/' ? '/index.html' : pathname)),
+    );
     if (!file.startsWith(root)) return new Response('Prohibido', { status: 403 });
     const response = await net.fetch(pathToFileURL(file).toString());
     const headers = new Headers(response.headers);
@@ -120,7 +134,9 @@ function createWindow(): void {
     return { action: 'deny' };
   });
   window.webContents.on('will-navigate', (event, url) => {
-    const allowed = url.startsWith(`${APP_ORIGIN}/`) || (DEV_RENDERER_URL !== undefined && url.startsWith(DEV_RENDERER_URL));
+    const allowed =
+      url.startsWith(`${APP_ORIGIN}/`) ||
+      (DEV_RENDERER_URL !== undefined && url.startsWith(DEV_RENDERER_URL));
     if (!allowed) event.preventDefault();
   });
   window.on('closed', () => {
@@ -147,7 +163,9 @@ if (!app.requestSingleInstanceLock()) {
   });
   ipcMain.handle('orq:pick-directory', async () => {
     const options = { properties: ['openDirectory' as const] };
-    const result = window ? await dialog.showOpenDialog(window, options) : await dialog.showOpenDialog(options);
+    const result = window
+      ? await dialog.showOpenDialog(window, options)
+      : await dialog.showOpenDialog(options);
     return result.canceled ? null : (result.filePaths[0] ?? null);
   });
 
@@ -156,7 +174,10 @@ if (!app.requestSingleInstanceLock()) {
     try {
       enginePort = await startEngine();
     } catch (e) {
-      dialog.showErrorBox('Orquestador', `No se pudo iniciar el motor: ${e instanceof Error ? e.message : String(e)}`);
+      dialog.showErrorBox(
+        'Orquestador',
+        `No se pudo iniciar el motor: ${e instanceof Error ? e.message : String(e)}`,
+      );
       app.quit();
       return;
     }

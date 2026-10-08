@@ -12,5 +12,6 @@ const config = ipcRenderer.sendSync('orq:config') as BridgeConfig;
 
 contextBridge.exposeInMainWorld('orquestador', {
   ...config,
-  pickDirectory: (): Promise<string | null> => ipcRenderer.invoke('orq:pick-directory') as Promise<string | null>,
+  pickDirectory: (): Promise<string | null> =>
+    ipcRenderer.invoke('orq:pick-directory') as Promise<string | null>,
 });

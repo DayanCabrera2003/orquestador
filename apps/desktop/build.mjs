@@ -3,7 +3,14 @@ import { build } from 'esbuild';
 
 /** Quedan fuera del bundle: Electron, el módulo nativo y el SDK del agente (que trae su propia CLI). */
 const external = ['electron', 'node-pty', '@anthropic-ai/claude-agent-sdk', 'electron-updater'];
-const common = { bundle: true, platform: 'node', target: 'node24', sourcemap: true, external, logLevel: 'info' };
+const common = {
+  bundle: true,
+  platform: 'node',
+  target: 'node24',
+  sourcemap: true,
+  external,
+  logLevel: 'info',
+};
 
 await Promise.all([
   build({
@@ -13,7 +20,15 @@ await Promise.all([
     outdir: 'out',
     outExtension: { '.js': '.mjs' },
     // Algunas dependencias empaquetadas usan require: se lo damos en ESM.
-    banner: { js: "import { createRequire as __cr } from 'node:module'; const require = __cr(import.meta.url);" },
+    banner: {
+      js: "import { createRequire as __cr } from 'node:module'; const require = __cr(import.meta.url);",
+    },
   }),
-  build({ ...common, format: 'cjs', entryPoints: { preload: 'src/preload.ts' }, outdir: 'out', outExtension: { '.js': '.cjs' } }),
+  build({
+    ...common,
+    format: 'cjs',
+    entryPoints: { preload: 'src/preload.ts' },
+    outdir: 'out',
+    outExtension: { '.js': '.cjs' },
+  }),
 ]);
