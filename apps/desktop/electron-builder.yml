@@ -1,5 +1,7 @@
 appId: io.github.dayancabrera2003.orquestador
 productName: Orquestador
+# Nombre de archivo estable y sin caracteres del nombre del paquete npm.
+artifactName: Orquestador-${version}-${arch}.${ext}
 executableName: orquestador
 copyright: Copyright © 2026 Dayan Cabrera
 directories:
