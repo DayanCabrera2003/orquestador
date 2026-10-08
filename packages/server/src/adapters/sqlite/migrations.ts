@@ -49,4 +49,12 @@ export const MIGRATIONS: readonly string[] = [
     data TEXT NOT NULL
   );
   `,
+  /* 0002 sesiones del agente, para retomar conversaciones */ `
+  CREATE TABLE agent_sessions (
+    flow_id TEXT NOT NULL REFERENCES flows(id) ON DELETE CASCADE,
+    session_id TEXT NOT NULL,
+    agent_session_id TEXT NOT NULL,
+    PRIMARY KEY (flow_id, session_id)
+  );
+  `,
 ];

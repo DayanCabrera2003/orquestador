@@ -38,6 +38,10 @@ export interface Store {
   addUsage(flowId: string, record: UsageRecord, at: string): void;
   usageByFlow(flowId: string): UsageRecord[];
 
+  /** Id de la conversación del agente para una sesión, para poder retomarla. */
+  getAgentSessionId(flowId: string, sessionId: string): string | undefined;
+  setAgentSessionId(flowId: string, sessionId: string, agentSessionId: string): void;
+
   getSettings(): Settings | undefined;
   saveSettings(settings: Settings): void;
 

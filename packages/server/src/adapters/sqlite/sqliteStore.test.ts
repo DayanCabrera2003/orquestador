@@ -73,6 +73,14 @@ describe('SqliteStore', () => {
     ]);
   });
 
+  it('recuerda la conversación del agente de cada sesión', () => {
+    store.saveFlow({ projectId: 'p1', flow, updatedAt: at });
+    expect(store.getAgentSessionId('f1', 'e1')).toBeUndefined();
+    store.setAgentSessionId('f1', 'e1', 'a1');
+    store.setAgentSessionId('f1', 'e1', 'a2');
+    expect(store.getAgentSessionId('f1', 'e1')).toBe('a2');
+  });
+
   it('reabre una base existente sin volver a migrar', () => {
     store.saveFlow({ projectId: 'p1', flow, updatedAt: at });
     store.close();

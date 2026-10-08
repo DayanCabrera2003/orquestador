@@ -205,6 +205,25 @@ export class SqliteStore implements Store {
     }));
   }
 
+  getAgentSessionId(flowId: string, sessionId: string): string | undefined {
+    const row = this.one(
+      'SELECT agent_session_id FROM agent_sessions WHERE flow_id = ? AND session_id = ?',
+      flowId,
+      sessionId,
+    );
+    return row && str(row, 'agent_session_id');
+  }
+
+  setAgentSessionId(flowId: string, sessionId: string, agentSessionId: string): void {
+    this.run(
+      `INSERT INTO agent_sessions (flow_id, session_id, agent_session_id) VALUES (?, ?, ?)
+       ON CONFLICT(flow_id, session_id) DO UPDATE SET agent_session_id = excluded.agent_session_id`,
+      flowId,
+      sessionId,
+      agentSessionId,
+    );
+  }
+
   getSettings(): Settings | undefined {
     const row = this.one('SELECT data FROM settings WHERE id = 1');
     return row && SettingsSchema.parse(JSON.parse(str(row, 'data')));
