@@ -14,8 +14,12 @@ permissions:
 
 jobs:
   verificar:
-    name: Typecheck, lint y tests
-    runs-on: ubuntu-latest
+    name: Verificar (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
