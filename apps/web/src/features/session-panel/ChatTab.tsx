@@ -12,6 +12,7 @@ export function ChatTab({ sessionId }: { sessionId: string }) {
   const flow = useFlow((s) => s.flow);
   const messages = useRuntime((s) => s.messages[sessionId]);
   const draft = useRuntime((s) => s.drafts[sessionId]);
+  const terminalOpen = useRuntime((s) => s.runtimes[sessionId]?.terminalOpen ?? false);
   const loadMessages = useRuntime((s) => s.loadMessages);
   const [text, setText] = useState('');
   const end = useRef<HTMLDivElement>(null);
@@ -80,6 +81,7 @@ export function ChatTab({ sessionId }: { sessionId: string }) {
           <div ref={end} />
         </div>
       </div>
+      {terminalOpen && <p className={styles.notice}>{t('panel.chatPausedByTerminal')}</p>}
       <form
         className={styles.composer}
         onSubmit={(e) => {
@@ -90,6 +92,7 @@ export function ChatTab({ sessionId }: { sessionId: string }) {
         <textarea
           className={ui.input}
           rows={2}
+          disabled={terminalOpen}
           value={text}
           placeholder={t('panel.composerPlaceholder', { name: session.name })}
           onChange={(e) => {

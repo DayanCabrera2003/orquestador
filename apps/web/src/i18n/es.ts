@@ -160,6 +160,12 @@ export const es = {
     contextWindow: 'Ventana de contexto',
     contextOf: '{used} de {total} tokens · {pct}%',
     worktree: 'Worktree',
+    terminalOpen: 'Terminal abierta · el chat de esta sesión está en pausa',
+    terminalClosed: 'Se abre la CLI del agente sobre la misma conversación',
+    closeTerminal: 'Cerrar terminal',
+    terminalExited: '[terminal cerrada]',
+    chatPausedByTerminal:
+      'La terminal de esta sesión está abierta. Ciérrala para volver a usar el chat.',
     noWorktree: 'Sin worktree',
   },
   inbox: {

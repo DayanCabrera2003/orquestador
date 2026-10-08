@@ -129,7 +129,7 @@ export function SessionPanel() {
             ))}
           </div>
           {tab === 'chat' && <ChatTab sessionId={session.id} />}
-          {tab === 'terminal' && <TerminalTab />}
+          {tab === 'terminal' && <TerminalTab flowId={flow.id} sessionId={session.id} />}
           {tab === 'config' && <ConfigTab sessionId={session.id} />}
           {tab === 'usage' && <UsageTab sessionId={session.id} />}
         </>
