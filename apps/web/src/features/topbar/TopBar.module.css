@@ -1,0 +1,131 @@
+.top {
+  flex: none;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+  position: relative;
+  z-index: 12;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+}
+.sep {
+  width: 1px;
+  height: 22px;
+  background: var(--line-2);
+  flex: none;
+}
+.crumb {
+  font: 12px var(--font-mono);
+  color: var(--fg-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 320px;
+}
+.crumb b {
+  color: var(--fg);
+  font-weight: 500;
+}
+.crumb:hover {
+  color: var(--fg);
+}
+.run {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.run i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.running {
+  color: var(--ok);
+}
+.running i {
+  animation: blink 1.6s ease-in-out infinite;
+}
+.offline {
+  color: var(--crit);
+}
+.spacer {
+  flex: 1;
+}
+.metrics {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.metric span {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--muted);
+}
+.metric b {
+  font: 500 13px var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.metric em {
+  font-style: normal;
+  color: var(--muted);
+}
+.budget {
+  width: 120px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--line-2);
+  overflow: hidden;
+  margin-top: 4px;
+}
+.budget i {
+  display: block;
+  height: 100%;
+  background: var(--fg-2);
+  transition: width 0.6s;
+}
+.badge {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--fg);
+  color: var(--bg);
+  font: 600 10.5px/18px var(--font-mono);
+  text-align: center;
+}
+@keyframes blink {
+  50% {
+    opacity: 0.35;
+  }
+}
+@media (max-width: 1000px) {
+  .metrics > :nth-child(-n + 2) {
+    display: none;
+  }
+}
+@media (max-width: 760px) {
+  .crumb,
+  .run {
+    display: none;
+  }
+}
