@@ -9,3 +9,7 @@ En diseño. Todavía no hay código ejecutable.
 ## Versiones
 
 Cada versión publicada aparece en [Releases](../../releases) con instaladores para Linux, macOS y Windows. Las versiones siguen SemVer y se generan a partir de los mensajes de commit (Conventional Commits).
+
+## Licencia
+
+[MIT](LICENSE)
