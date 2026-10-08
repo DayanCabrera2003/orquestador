@@ -14,6 +14,7 @@ import type {
   AgentRuntime,
   CoordinationHandlers,
   InboxKind,
+  TerminalLaunch,
 } from '../ports/AgentRuntime';
 import type { AppContext } from './context';
 import { AppError } from './errors';
@@ -50,6 +51,7 @@ const quote = (s: SessionNode): string => `«${s.name}»`;
 export class SessionManager {
   private readonly running = new Map<string, Running>();
   private readonly questions = new Map<string, PendingQuestion>();
+  private readonly inTerminal = new Set<string>();
   private nextQuestion = 1;
 
   constructor(
@@ -63,11 +65,8 @@ export class SessionManager {
     return this.running.has(key(flowId, sessionId));
   }
 
-  /** Inicia la sesión si no está en marcha. */
-  async start(flowId: string, sessionId: string): Promise<Running> {
-    const existing = this.running.get(key(flowId, sessionId));
-    if (existing) return existing;
-
+  /** Datos para lanzar una sesión: instrucciones, carpeta de trabajo y subagentes. */
+  private async prepare(flowId: string, sessionId: string) {
     const flow = getFlow(this.ctx, flowId);
     const session = this.requireSession(flow, sessionId);
     const project = requireProject(this.ctx, projectOfFlow(this.ctx, flowId));
@@ -107,6 +106,23 @@ export class SessionManager {
         },
       ];
     });
+    return { session, instructions: instructions.value, cwd, worktreePath, branch, subagents };
+  }
+
+  /** Inicia la sesión si no está en marcha. */
+  async start(flowId: string, sessionId: string): Promise<Running> {
+    const existing = this.running.get(key(flowId, sessionId));
+    if (existing) return existing;
+    if (this.inTerminal.has(key(flowId, sessionId))) {
+      throw new AppError(
+        'conflict',
+        'La terminal de esta sesión está abierta: ciérrala para usar el chat.',
+      );
+    }
+    const { session, instructions, cwd, worktreePath, branch, subagents } = await this.prepare(
+      flowId,
+      sessionId,
+    );
 
     const entry: Running = {
       flowId,
@@ -120,7 +136,7 @@ export class SessionManager {
       {
         model: session.model,
         cwd,
-        instructions: instructions.value,
+        instructions,
         permissions: session.permissions,
         subagents,
         resumeId: this.ctx.store.getAgentSessionId(flowId, sessionId),
@@ -242,6 +258,46 @@ export class SessionManager {
       { kind: 'user' },
       `Respuesta del usuario a «${item.question}»:\n${answer}`,
     );
+  }
+
+  /**
+   * Prepara la sesión para abrirla en una terminal: detiene el chat y devuelve cómo lanzarla.
+   * Mientras la terminal esté abierta, el chat no puede iniciarla.
+   */
+  async beginTerminal(
+    flowId: string,
+    sessionId: string,
+  ): Promise<{ cwd: string; launch: TerminalLaunch }> {
+    const k = key(flowId, sessionId);
+    const entry = this.running.get(k);
+    if (entry) {
+      this.running.delete(k);
+      entry.handle.close();
+    }
+    const { session, instructions, cwd, worktreePath, branch } = await this.prepare(
+      flowId,
+      sessionId,
+    );
+    this.inTerminal.add(k);
+    this.runtime.update(flowId, sessionId, {
+      status: 'waiting',
+      terminalOpen: true,
+      worktreePath,
+      branch,
+    });
+    return {
+      cwd,
+      launch: {
+        model: session.model,
+        instructions,
+        resumeId: this.ctx.store.getAgentSessionId(flowId, sessionId),
+      },
+    };
+  }
+
+  endTerminal(flowId: string, sessionId: string): void {
+    this.inTerminal.delete(key(flowId, sessionId));
+    this.runtime.update(flowId, sessionId, { terminalOpen: false });
   }
 
   closeAll(): void {

@@ -26,6 +26,9 @@ class FakeRuntime implements AgentRuntime {
       close: () => undefined,
     };
   }
+  terminalCommand() {
+    return { command: 'agente', args: [] };
+  }
 }
 
 const readOnly = {
