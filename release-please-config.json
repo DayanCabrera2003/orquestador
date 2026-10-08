@@ -58,7 +58,8 @@
   ],
   "packages": {
     ".": {
-      "package-name": "orquestador"
+      "package-name": "orquestador",
+      "initial-version": "0.1.0"
     }
   }
 }
